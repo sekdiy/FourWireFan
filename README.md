@@ -1,5 +1,10 @@
 # FourWireFan
 
+Arduino four wire fan library that provides speed control and calibrated tach measurement.
+
+This Four Wire Fan library is intended for use with three- or four-wire computer cooling fans. 
+Three-wire fans provide a tachometer signal output, four-wire fans additionally have a speed setting input.
+
 ## Why four-wire fans?
 
 Three- and four-wire computer cooling fans provide a couple of advantages over generic fans (i.e. simple two-wire cooling fans).

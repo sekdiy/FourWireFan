@@ -1,4 +1,4 @@
-# FourWireFan
+# FourWireFan [![Version](https://img.shields.io/badge/FourWireFan-0.1.0-blue.svg 'still in beta')](https://github.com/sekdiy/FourWireFan)
 
 Arduino four wire fan library that provides speed control and calibrated tach measurement.
 

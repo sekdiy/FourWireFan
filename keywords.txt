@@ -1,0 +1,37 @@
+#######################################
+# Syntax Coloring Map For FourWireFan
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+FourWireFan             KEYWORD1
+FourWireFanSettings     KEYWORD1
+FourWireFanModel        KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+process                 KEYWORD2
+reset                   KEYWORD2
+count                   KEYWORD2
+getRPM                  KEYWORD2
+getPWM                  KEYWORD2
+getLoad                 KEYWORD2
+getModel                KEYWORD2
+setPWM                  KEYWORD2
+setModel                KEYWORD2
+setup                   KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+DefaultFanSettings      KEYWORD2
+DefaultFanModel         KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################

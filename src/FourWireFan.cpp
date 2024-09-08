@@ -26,6 +26,7 @@ FourWireFan::FourWireFan(uint8_t pwmPin)
 
     this->setup();                                      // connect and attach
     this->reset();                                      // clear pulses from 
+
 }
 
 /**
@@ -36,7 +37,7 @@ FourWireFan::FourWireFan(uint8_t pwmPin)
  * @param settings The connection settings of a four wire fan. 
  * @param model The properties of a four wire fan.
  */
-FourWireFan::FourWireFan(FourWireFanSettings* settings = &DefaultFanSettings, FourWireFanModel* model = &DefaultFanModel) :
+FourWireFan::FourWireFan(FourWireFanSettings* settings, FourWireFanModel* model) :
     _settings(settings),
     _model(model)
 {
@@ -63,7 +64,7 @@ void FourWireFan::setup()
  * 
  * @param duration The duration of the measuring period since last call to `process()` in ms
  */
-void FourWireFan::process(unsigned long duration = 1000)
+void FourWireFan::process(unsigned long duration)
 {
     unsigned long pulses;
 
@@ -113,7 +114,7 @@ void FourWireFan::count()
     uint32_t now = micros();
     uint32_t interval = now - this->_blink;
 
-    // debouncing (optional, if interval )
+    // debouncing (optional, if interval is longer than debounce timeout)
     if (interval >= this->_settings->tau) {
         this->_pulses++;
     }
@@ -138,6 +139,7 @@ unsigned long FourWireFan::getRPM()
  * Returns calculated load from current slippage (requires proper model values).
  * 
  * @since 2020-07-22
+ * @todo rescale
  * 
  * @return float
  */
@@ -197,7 +199,7 @@ unsigned int FourWireFan::getDebounceTime()
  * @param tau The time constant to set
  * @return FourWireFan*
  */
-FourWireFan* FourWireFan::setDebounceTime(unsigned long tau = 10000L)
+FourWireFan* FourWireFan::setDebounceTime(unsigned long tau)
 {
     this->_settings->tau = tau;
 

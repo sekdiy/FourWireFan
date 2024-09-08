@@ -8,8 +8,8 @@
  * @version See git comments for changes.
  */
 
-#ifndef FOURWIREFAN_H
-#define FOURWIREFAN_H
+#ifndef __FOURWIREFAN_H__
+#define __FOURWIREFAN_H__
 
 #include "Arduino.h"
 
@@ -138,4 +138,4 @@ class FourWireFan {
         void setup();                                   //!< initial internal pin setup
 };
 
-#endif   // FOURWIREFAN_H
+#endif   // __FOURWIREFAN_H__

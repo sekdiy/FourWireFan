@@ -31,6 +31,9 @@ setup                   KEYWORD2
 
 DefaultFanSettings      KEYWORD2
 DefaultFanModel         KEYWORD2
+DefaultThreeWireFanModel    KEYWORD2
+DefaultFourWireFanModel KEYWORD2
+NF_A12_25_FanModel      KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

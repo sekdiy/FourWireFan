@@ -1,39 +1,53 @@
 # FourWireFan [![Version](https://img.shields.io/badge/FourWireFan-0.1.0-blue.svg 'still in beta')](https://github.com/sekdiy/FourWireFan)
 
-Arduino four wire fan library that provides speed control and calibrated tach measurement.
+Four wire fan library that provides speed control and calibrated tach measurement for microcontroller platforms.
 
 This Four Wire Fan library is intended for use with three- or four-wire computer cooling fans. 
 Three-wire fans provide a tachometer signal output, four-wire fans additionally have a speed setting input.
 
 ## Why four-wire fans?
 
-Three- and four-wire computer cooling fans provide a couple of advantages over generic fans (i.e. simple two-wire cooling fans).
+Three- and four-wire cooling fans provide a couple of advantages over generic fans (i.e. simple two-wire cooling fans).
 
-The are specified (see links below) for built-in _polarity protection_, _rotor lock protection_, _auto-restart_, have a _common connector_ and _pinout_, _low commutation noise_ as well as _low power consumption_.
+The are *specified* (see references below) for built-in _polarity protection_, _rotor lock protection_, _auto-restart_, have a _common connector_ and _pinout_, _low commutation noise_ as well as relatively _low power consumption_.
 
-Three- and four-wire fans are currently available as 5V, 12V and 24V devices.
+Three- and four-wire fans can usually be found as 5V, 12V and 24V devices.
 
-## Keeping it simple
+## Keeping it simple, but safe
 
-In order to get started quickly I recommend the 5V fan variants for safety and simplicity reasons (no 12V or 24V power source required, lower likelihood of accidentally frying the electronics).
+In order to get started quickly I recommend the 5V fan variants for safety and simplicity reasons: no higher voltage source required, lower likelihood of accidentally frying your electronics.
 
-See the following wiring diagrams:
+Notably, many 12V fans will work with a 5V supply, although at a lower speed.
 
-![Using an Arduino UNO: connect fan pin 1 to GND, fan pin 2 to 5V, fan pin 3 to Arduino pin 2 and (optionally) fan pin 4 to Arduino pin 3.](doc/simple.svg "Figure 1: Simple wiring diagram with Ardunio Uno")
+A low power CPU fan or case fan can be powered via the `VCC` and `GND` pins.
+For sensing, an interrupt input pin `INT` is required.
+For speed control, a `PWM` pin must be used.
 
-![Using an Arduino Mini, Nano or Micro: connect fan pin 1 to GND, fan pin 2 to 5V, fan pin 3 to Arduino pin D2 and (optionally) fan pin 4 to Arduino pin D3.](doc/mini.svg "Figure 2: Simple wiring diagram with Arduino Mini, Nano or Micro")
+When using a separate fan power supply, keep in mind that a `GND` connection between the fan's power supply and the microcontroller board is always required for sensing/controlling.
+
+Higher power fans **should not** be powered via USB or via the on board voltage regulator IC!
+This is true for any microcontroller board that doesn't supply dedicated power to peripherals.
+There are case fans out there requiring as much power as a small model aircraft.
+Take care not to destroy your microcontroller…
+
+See the following wiring diagrams for low power fans (max. current: 500mA):
+
+Using the Arduino pin naming scheme, connect fan pin 1 to `GND`, fan pin 2 to `VCC`, fan pin 3 to Arduino pin `2` and (optionally) fan pin 4 to Arduino pin `3`:
+
+![Arduino UNO: fan pin 1 to GND, fan pin 2 to VCC or RAW, fan pin 3 to Arduino pin 2 and (optionally) fan pin 4 to Arduino pin 3.](doc/simple.svg "Figure 1: Simple wiring diagram with Ardunio Uno")
+
+![Arduino Mini, Nano or Micro: fan pin 1 to GND, fan pin 2 to 5V, fan pin 3 to Arduino pin D2 and (optionally) fan pin 4 to Arduino pin D3.](doc/mini.svg "Figure 2: Simple wiring diagram with Arduino Mini, Nano or Micro")
 
 ## Fan speed, noise and reliability
 
-A computer cooling fan runs more quietly and more reliably at lower speeds.
+A computer cooling fan runs more quietly and lasts longer at lower speeds.
 
-I considered sensing fan motor load in order to possibly detect dust buildup or obstructed airways.
+Fans get louder if turbulences occur. But especially [axial fans](https://en.wikipedia.org/wiki/Fan_(machine)#Axial-flow) aren't necessarily slowed down when loaded or blocked. This means that fan load can't effectively be detected through speed alone.
 
-But I found no reliable way to correllate deviation under load (various dust screens) from expected fan speed (reference measurement).
+As an example, the speed of a Noctua NF-A12 drops less than 1% until the airways are essentially blocked.
 
-Fans get louder if turbulences occur. But they aren't necessarily slowed down in a way that can easily be measured.
-
-As an example, the speed of a Noctua NF-A12 drops less than 1% while the airways are almost blocked.
+Thus, speed control is a good approach when designing a quiet and efficient system. 
+But it's not a way to guarantee adequate cooling in all conditions (e.g. increasing fan speed does not necessarily equate more cooling).
 
 ## Further considerations
 
@@ -41,11 +55,17 @@ As an example, the speed of a Noctua NF-A12 drops less than 1% while the airways
 
 > "If driving multiple fans with a single PWM output, an open-drain / open collector output buffer circuit is required."
 
+An Arduino compatible microcontroller takes care of that internally, so you can connect multiple fans in parallel.
+
 ### Minimum speed
 
 > "The fan shall be able to start and run at [the minimum] RPM."
 
 > "[The fan will] turn off the motor at 0% PWM duty cycle."
+
+Some fans stop at 0% PWM, some continue running at minimum speed, both approaches have their application.
+
+This Four Wire Fan library provides a spinup condition detection so that your fans can start up either gently or with a [maximum speed spinup](https://en.wiktionary.org/wiki/percussive_maintenance) phase.
 
 ### Minimum RPM
 
@@ -53,21 +73,31 @@ As an example, the speed of a Noctua NF-A12 drops less than 1% while the airways
 
 > "For all duty cycles less than the minimum duty cycle, the RPM shall not be greater than the minimum RPM."
 
+This appears to be true for all four wire fans that I have come across.
+
 ### Minimum duty cycle
 
 > "In a Type A implementation the fan will run […] for all PWM duty cycle values".
 
-This means …
+Many computer fans are like this.
 
 > "In a Type B implementation the fan will run […] for all non-zero PWM duty cycle values".
 
+This type of fan stops at 0% PWM.
+
 > "In Type C implementation the fan will stop running when the current provided to the motor windings is insufficient".
+
+Realistically, any fan will stop or fail to start up with insufficient current provided, but this type of fan would not compensate for lower current at all.
+
+Many auxillary fans or non-computer fans operate like this.
 
 ### Pull up/down resistors
 
 > "The trace from PWM output to the fan header must not have a pull up or pull down. The pull up is located in the fan hub."
 
-## Sources
+An Arduino compatible microcontroller takes care of that internally, so you can connect one or multiple fans.
+
+## References
 
 - Intel specification (Internet Archive, 2018, PDF): [4-Wire Pulse Width Modulation (PWM) Controlled Fans](https://web.archive.org/web/20180619122326/http://www.formfactors.org/developer/specs/4_wire_pwm_spec.pdf)
 - Mary Burke, Analog Devices: [Why and How to Control Fan Speed

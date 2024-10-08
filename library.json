@@ -1,0 +1,22 @@
+{
+    "name": "FourWireFan",
+    "version": "0.2.0",
+    "description": "A four wire fan library that provides speed measurement and adjustment as well as spinup control and fan monitoring.",
+    "keywords": "fan, fans, speed, rpm, pwm, tach",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/sekdiy/FourWireFan.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Sebastian Kraus",
+        "email": "sekdiy@gmail.com"
+      }
+    ],
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*"
+  }
+  

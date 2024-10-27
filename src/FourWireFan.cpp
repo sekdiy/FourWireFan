@@ -13,20 +13,20 @@
 #include <math.h>
 
 /** 
- * Simple constructor for a four wire fan (requires external interrupt handling)
+ * Simple constructor for a four wire fan
  * 
  * @since 2020-07-22
  * 
- * @param pwmPin The output pin where the fan's PWM signal input is connected
+ * @param pwmPin The output pin where the fan's PWM signal input is connected (default: 3)
+ * @param tachPin The input pin where the fan's tachometer signal output pin is connected (default: 2)
+ * @param tachISR Tachometer interrupt service routine (handler function) callback reference (default: none)
  */
-FourWireFan::FourWireFan(uint8_t pwmPin) 
+FourWireFan::FourWireFan(uint8_t pwmPin, uint8_t tachPin, void (*tachISR)(void))
 {
-    this->_settings = new FourWireFanSettings(pwmPin);  // default settings with supplied pwmPin
+    this->_settings = new FourWireFanSettings(pwmPin, tachPin, tachISR);  // default settings with supplied pwmPin
     this->_model = new FourWireFanModel();              // default fan model
 
-    this->setup();                                      // connect and attach
-    this->reset();                                      // clear pulses from 
-
+    this->begin(); 
 }
 
 /**

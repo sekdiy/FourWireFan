@@ -114,10 +114,10 @@ class FourWireFan {
         FourWireFan(FourWireFanSettings* settings, FourWireFanModel* model = &DefaultFourWireFanModel);
 
         void begin();                                   // Setup physical connection and clear pulse counter
+        void reset();                                   // Resets measurement values (only)
+        void count();                                   // Increments the internal pulse counter (and serves as interrupt callback routine)
+        void update(uint16_t duration = 1000);          // Updates fan speed from tachometer pulse input
 
-        void process(unsigned long duration = 1000);    //!< Processes fan speed from tachometer pulse input
-        void reset();                                   //!< Resets measurement values (only)
-        void count();                                   //!< Increments the internal pulse counter (and serves as interrupt callback routine)
 
         unsigned long getRPM();                         //!< Returns calculated RPM (i.e. fan speed) 
         float getSlippage();                            //!< Returns calculated slippage from current load (requires model)
@@ -130,6 +130,9 @@ class FourWireFan {
 
         FourWireFanModel* getModel();                   //!< Returns current four wire fan model
         FourWireFan* setModel(FourWireFanModel* model = &DefaultFanModel);  //!< Updates four wire fan model
+
+       /* deprecated: */
+        void process(uint16_t duration = 1000) { update(duration); }
 
     protected:
         FourWireFanSettings* _settings;                 //!< four wire fan settings

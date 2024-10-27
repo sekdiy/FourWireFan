@@ -45,6 +45,17 @@ FourWireFan::FourWireFan(FourWireFanSettings* settings, FourWireFanModel* model)
 }
 
 /**
+ * Setup physical connection and clear pulse counter
+ * 
+ * @since 2024-10-18
+ */
+void FourWireFan::begin()
+{
+    this->setup();                                  // connect and attach
+    this->reset();                                  // clear pulses from 
+}
+
+/**
  * initial internal pin setup
  * 
  * @since 2020-07-22
@@ -53,38 +64,10 @@ void FourWireFan::setup()
 {
     // analogWriteResolution(8);
     pinMode(this->_settings->tachPin, this->_settings->tachPU);
+
+    noInterrupts();                                 // going to change interrupt variable(s)
     attachInterrupt(digitalPinToInterrupt(this->_settings->tachPin), this->_settings->tachISR, this->_settings->tachMode);
-}
-
-/**
- * Processes fan speed from tachometer pulse input.
- * 
- * @since 2020-07-22
- * 
- * @param duration The duration of the measuring period since last call to `process()` in ms
- */
-void FourWireFan::process(unsigned long duration)
-{
-    unsigned long pulses;
-
-    /* sample */
-    noInterrupts();                                 //!< going to change interrupt variable(s)
-    pulses = this->_pulses;                         //!< save pulses counted during last current processing duration
-    this->_pulses = 0;                              //!< reset pulse counter after successfully sampling it
-    interrupts();                                   //!< never forget!
-
-    /* normalise */
-    // double seconds = (double) duration / 1000.0f;   //!< normalised duration (in s, i.e. per 1000ms)
-    // double frequency = (double) pulses / seconds;   //!< normalised frequency (in 1/s)
-
-    // /* calculate */
-    // double rpm = frequency * 60.0f / 2.0f;          //!< convert from 1/s to 1/min and accont for two (2) pulses per revolution
-
-    // /* store new rpm value */
-    // this->_rpm = (unsigned long) rpm;               //!< explicit conversion from double to unsigned long
-
-    /* alternatively: calculate, normalise and store new rpm value in one go */
-    this->_rpm = (unsigned long) pulses * 60.0f / 2.0f / (duration / 1000.0f);  //!< convert two pulses per revolution to revolutions per minute and store result
+    interrupts();                                   // never forget!
 }
 
 /**
@@ -123,59 +106,97 @@ void FourWireFan::count()
 }
 
 /**
- * Returns calculated RPM (i.e. fan speed).
+ * Updates fan operation, e.g. spinning up, tachometer input, speed update, spindown detection.
  * 
  * @since 2020-07-22
  * 
- * @return unsigned long
+ * @param duration The length of the measuring period since the last call to `update()` (in ms)
  */
-unsigned long FourWireFan::getRPM()
+void FourWireFan::update(uint16_t duration)
+{
+    uint32_t pulses;
+    uint8_t targetPWM = this->_model->maxPWM;       // default to maximum fan speed (as a safety measure!)
+
+    /* sample tachometer value */
+    noInterrupts();                                 // going to change interrupt variables
+    pulses = this->_pulses;                         // save pulses counted during duration
+    this->_pulses = 0;                              // reset pulse counter after successfully sampling it
+    this->_blink = 0;                               // reset debouncing interval so as not to bleed over into next interval
+    interrupts();                                   // never forget!
+
+    /**
+     * Two impulses per revolution are converted to revolutions per minute.
+     * The algorithm is very simple and assumess that any four wire fan adheres to at least the original Intel specification.
+     * At this point most of the actual work has already been done via the `count()` method and its debouncing/filtering action.
+     * 
+     * // normalise:
+     * double seconds = (double) duration / 1000.0f;   // normalised duration (in s, i.e. per 1000ms)
+     * double frequency = (double) pulses / seconds;   // normalised frequency (in 1/s)
+     * 
+     * // calculate:
+     * double rpm = frequency * 60.0f / 2.0f;          // convert from 1/s to 1/min and accont for two pulses per revolution
+     * 
+     * // store new rpm value:
+     * this->_rpm = (uint32_t) rpm;                    // explicit conversion from double to unsigned long
+     * 
+     * @see "4-Wire Pulse Width Modulation (PWM) Controlled Fans", Intel Corporation September 2005, revision 1.3 
+     * @see "Noctua PWM specifications white paper", www.noctua.at
+     */
+
+    /* alternatively: calculate, normalise and store new rpm value in one go */
+    this->_rpm = (uint32_t) pulses * 60.0f / 2.0f / (duration / 1000.0f);  // (two) pulses per revolution to revolutions per minute
+
+    /* detect spindown */
+    if ((this->_rpm <= this->_model->minRPM) &&     // motor not faster than minimum speed
+        (this->_pwm >= this->_model->minPWM)) {     // *and* set point higher than that?
+        this->_spinup = this->_model->spinup;       // apply motor spin
+    }
+
+    /* handle spinup (see: https://en.wiktionary.org/wiki/percussive_maintenance) */
+    if ((0 < this->_spinup) &&                      // spinup condition is met
+        (this->getRPM() >= this->_model->minRPM)) { // *and* fan has started to move?
+        // reduce remaining spinup duration (down to zero)
+        this->_spinup -= duration;
+        // in case the fan doesn't show signs of movement yet, keep trying…
+    } else {
+        // spinup condition not met (a.k.a. normal operation)
+        targetPWM = this->_pwm;
+    }
+
+    /* update speed set point */
+    analogWrite(this->_settings->pwmPin, 2.55f * targetPWM);
+}
+
+/**
+ * Returns calculated RPM (i.e. fan speed).
+ * 
+ * @since 2020-07-22
+ * @todo error repporting
+ * 
+ * @return uint32_t
+ */
+uint32_t FourWireFan::getRPM()
 {
     return this->_rpm;
 }
 
 /**
- * Returns calculated load from current slippage (requires proper model values).
+ * Updates PWM (duty cycle) according to RPM (i.e. fan speed) via fan model.
  * 
- * @since 2020-07-22
- * @todo rescale
+ * @since 2024-10-06
  * 
- * @return float
+ * @param rpm The new target rpm value (i.e. speed)
+ * 
+ * @return FourWireFan*
  */
-float FourWireFan::getSlippage()
+FourWireFan* FourWireFan::setRPM(uint32_t rpm)
 {
-    // get expected load for current rpm from model
-    // get slippage between expected and actual rpm
-    // derive load from slippage
+    // required pwm for a given rpm via fan model lookup
+    uint32_t pwm = 0; // todo: implement magic here
 
-    
-    // float normalisedRPM = (float) this->_rpm / (float) this->_model.maxRPM;
-    // float normalisedPWM = (float) this->_pwm / (float) this->_model.maxPWM;
+    this->setPWM(pwm);
 
-    // float scaledRPM = (float) this->_rpm / (float) this->_model.maxRPM - (float) this->_model.minRPM;
-
-    // float maxRPMcoefficient = (float) this->_model.maxRPM / (float) this->_model.maxPWM;
-    // float minRPMcoefficient = (float) this->_model.minRPM / (float) this->_model.minPWM;
-    // float currentRPMcoefficient = (float) this->_rpm / (float) this->_pwm;
-
-    // float scaledRPMcoefficient = (maxRPMcoefficient - minRPMcoefficient) * currentRPMcoefficient;
-
-    // float currentSlippage = currentRPMcoefficient / minRPMcoefficient;
-
-    // return 100 * (1 - currentSlippage);
-
-    float totalRPMspan = this->_model->maxRPM - this->_model->minRPM;
-    float upperRPMspan = max(this->_model->maxRPM, this->_rpm) - this->_rpm;
-    float lowerRPMspan = this->_rpm - min(this->_model->minRPM, this->_rpm);
-
-    float totalPWMspan = this->_model->maxPWM - this->_model->minPWM;
-    float upperPWMspan = max(this->_model->maxPWM, this->_pwm) - this->_pwm;
-    float lowerPWMspan = this->_pwm - min(this->_model->minPWM, this->_pwm);
-
-    float rpmRatio = lowerRPMspan / totalRPMspan;
-    float pwmRatio = lowerPWMspan / totalPWMspan;
-
-    return pwmRatio;
+    return this;
 }
 
 /**

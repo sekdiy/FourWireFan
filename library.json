@@ -15,6 +15,19 @@
         "email": "sek@sekdiy.de"
       }
     ],
+    "examples": 
+    [
+        {
+            "name": "Simple",
+            "base": "examples/Simple",
+            "files": "Simple.cpp"
+        },
+        {
+            "name": "Blink",
+            "base": "examples/Advanced",
+            "files": "Advanced.cpp"
+        }
+    ],
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*"

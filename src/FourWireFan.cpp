@@ -41,8 +41,7 @@ FourWireFan::FourWireFan(FourWireFanSettings* settings, FourWireFanModel* model)
     _settings(settings),
     _model(model)
 {
-    this->setup();
-    this->reset();
+    this->begin();
 }
 
 /**

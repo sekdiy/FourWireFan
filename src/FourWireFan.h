@@ -113,6 +113,7 @@ class FourWireFan {
          */
         FourWireFan(FourWireFanSettings* settings, FourWireFanModel* model = &DefaultFourWireFanModel);
 
+        void begin();                                   // Setup physical connection and clear pulse counter
 
         void process(unsigned long duration = 1000);    //!< Processes fan speed from tachometer pulse input
         void reset();                                   //!< Resets measurement values (only)

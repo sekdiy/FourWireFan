@@ -82,14 +82,16 @@ class FourWireFanModel {
             spinup(spinup)
         { *this->refRPM = *refRPM; }
 
-        FourWireFanModel* setCoefficient(uint8_t index, float rpm) { this->refRPM[index] = rpm; }
-        FourWireFanModel* setCoefficients(float refRPM[10]) { *this->refRPM = *refRPM; }
+        FourWireFanModel* setCoefficient(uint8_t index, float rpm) { this->refRPM[index] = rpm; return this; }
+        FourWireFanModel* setCoefficients(uint16_t refRPM[10]) { *this->refRPM = *refRPM; return this; }
 };
 
 /**
- * Pre-defined four wire fan model instances.
+ * Pre-defined fan model instances.
  */
-extern FourWireFanModel DefaultFanModel;    //!< Default four wire fan model instance.
+extern FourWireFanModel DefaultThreeWireFanModel;   // Default *three* wire fan model instance.
+extern FourWireFanModel DefaultFourWireFanModel;    // Default *four* wire fan model instance.
+extern FourWireFanModel NF_A12_25_FanModel;         // Noctua NF-A12x25 model instance.
 
 /**
  * Four wire fan driver class.

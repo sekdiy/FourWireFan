@@ -305,4 +305,8 @@ FourWireFanSettings const DefaultFanSettings = FourWireFanSettings(); // Default
 /**
  * Pre-defined four wire fan model instances.
  */
-FourWireFanModel DefaultFanModel = FourWireFanModel();          //!< Default four wire fan model instance.
+FourWireFanModel DefaultThreeWireFanModel = FourWireFanModel(10, 0, 100, 0, 1);                  // Default *three* wire fan model instance.
+FourWireFanModel DefaultFourWireFanModel = FourWireFanModel();                                   // Default *four* wire fan model instance.
+
+uint16_t NF_A12_25_refRPM[10] = {240, 420, 660, 870, 1080, 1260, 1400, 1500, 1600, 1700};
+FourWireFanModel NF_A12_25_FanModel = FourWireFanModel(10, 240, 100, 1700, 0, NF_A12_25_refRPM); // Noctua NF-A12x25 model instance.

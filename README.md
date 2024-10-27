@@ -1,4 +1,4 @@
-# FourWireFan [![Version](https://img.shields.io/badge/FourWireFan-0.1.0-blue.svg 'still in beta')](https://github.com/sekdiy/FourWireFan)
+# FourWireFan [![Version](https://img.shields.io/badge/FourWireFan-0.2.0-blue.svg 'still in beta')](https://github.com/sekdiy/FourWireFan)
 
 Four wire fan library that provides speed control and calibrated tach measurement for microcontroller platforms.
 
@@ -65,7 +65,7 @@ An Arduino compatible microcontroller takes care of that internally, so you can 
 
 Some fans stop at 0% PWM, some continue running at minimum speed, both approaches have their application.
 
-This Four Wire Fan library provides a spinup condition detection so that your fans can start up either gently or with a [maximum speed spinup](https://en.wiktionary.org/wiki/percussive_maintenance) phase.
+This Four Wire Fan library provides a spinup condition detection so that your fans can start up either gently or with a [full speed](https://en.wiktionary.org/wiki/percussive_maintenance) spinup phase.
 
 ### Minimum RPM
 

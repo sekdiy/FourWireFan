@@ -94,7 +94,7 @@ extern FourWireFanModel DefaultFourWireFanModel;    // Default *four* wire fan m
 extern FourWireFanModel NF_A12_25_FanModel;         // Noctua NF-A12x25 model instance.
 
 /**
- * Four wire fan driver class.
+ * A four-wire fan driver that provides a PWM speed and tachometer interface.
  */
 class FourWireFan {
     public:

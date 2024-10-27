@@ -204,9 +204,9 @@ FourWireFan* FourWireFan::setRPM(uint32_t rpm)
  * 
  * @since 2020-08-12
  * 
- * @return unsigned int
+ * @return uint32_t
  */
-unsigned int FourWireFan::getDebounceTime()
+uint32_t FourWireFan::getDebounceTime()
 {
     return this->_settings->tau;
 }
@@ -219,7 +219,7 @@ unsigned int FourWireFan::getDebounceTime()
  * @param tau The time constant to set
  * @return FourWireFan*
  */
-FourWireFan* FourWireFan::setDebounceTime(unsigned long tau)
+FourWireFan* FourWireFan::setDebounceTime(uint32_t tau)
 {
     this->_settings->tau = tau;
 
@@ -231,9 +231,9 @@ FourWireFan* FourWireFan::setDebounceTime(unsigned long tau)
  * 
  * @since 2020-07-22
  * 
- * @return float
+ * @return uint8_t
  */
-float FourWireFan::getPWM()
+uint8_t FourWireFan::getPWM()
 {
     return this->_pwm;
 }
@@ -244,13 +244,12 @@ float FourWireFan::getPWM()
  * @since 2020-07-22
  * 
  * @param pwm new target PWM value (i.e. speed)
+ * 
  * @return FourWireFan*
  */
-FourWireFan* FourWireFan::setPWM(float pwm) 
+FourWireFan* FourWireFan::setPWM(uint8_t pwm) 
 {
-    this->_pwm = max(min(pwm, this->_model->maxPWM), this->_model->minPWM);
-
-    analogWrite(this->_settings->pwmPin, 2.55f * this->_pwm);
+    this->_pwm = max(this->_model->minPWM, min(this->_model->maxPWM, pwm)); // minPWM <= pwm <= maxPWM
 
     return this;
 }

@@ -118,15 +118,15 @@ class FourWireFan {
         void count();                                   // Increments the internal pulse counter (and serves as interrupt callback routine)
         void update(uint16_t duration = 1000);          // Updates fan speed from tachometer pulse input
 
+        uint32_t getRPM();                              // Returns calculated RPM (i.e. fan speed) 
+        FourWireFan* setRPM(uint32_t rpm);              // Updates PWM (duty cycle) according to RPM (i.e. fan speed) via fan model lookup
 
-        unsigned long getRPM();                         //!< Returns calculated RPM (i.e. fan speed) 
-        float getSlippage();                            //!< Returns calculated slippage from current load (requires model)
+        uint32_t getDebounceTime();                     // Returns current debounce time constant
+        FourWireFan* setDebounceTime(uint32_t tau);     // Updates debounce time constant
 
-        unsigned int getDebounceTime();                 //!< Returns current debounce time constant
-        FourWireFan* setDebounceTime(unsigned long tau = 10000L); //!< Updates debounce time constant
+        uint8_t getPWM();                               // Returns current PWM set point
+        FourWireFan* setPWM(uint8_t pwm);               // Updates PWM set point
 
-        float getPWM();                                 //!< Returns current PWM set point
-        FourWireFan* setPWM(float pwm);                 //!< Updates PWM set point
         bool isBlocked();                              // Shows indication of spindown condition
 
         FourWireFanModel* getModel();                   //!< Returns current four wire fan model
@@ -139,11 +139,11 @@ class FourWireFan {
         FourWireFanSettings* _settings;                 //!< four wire fan settings
         FourWireFanModel* _model;                       //!< four wire fan model
 
-        float _pwm = 255;                               //!< the set point for PWM output pin (default: 100%)
-        unsigned long _rpm = 0;                         //!< the calculated RPM (i.e. fan speed)
-        volatile unsigned long _blink = 0;              //!< the moment of the last interrupt 'wakeup'
-        volatile unsigned long _pulses = 0;             //!< the pulses within the current sample period
+        uint8_t _pwm = 255;                             // the set point for PWM output pin (default: 100%)
+        uint32_t _rpm = 0;                              // the calculated RPM (i.e. fan speed)
         int16_t _spinup = 0;                            // the spinup condition counter
+        volatile uint32_t _blink = 0;                   // the moment of the last interrupt 'wakeup'
+        volatile uint32_t _pulses = 0;                  // the pulses within the current sample period
 
         void setup();                                   //!< initial internal pin setup
 };

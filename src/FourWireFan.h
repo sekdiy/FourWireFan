@@ -57,28 +57,30 @@ extern FourWireFanSettings const DefaultFanSettings;  // Default four wire fan s
 class FourWireFanModel {
     public:
         // public properties to avoid the getter/setter pattern
-        float minPWM;       //!< minimum specified speed setting (default: 20%)
-        float minRPM;       //!< specified speed at `minPWM` (default 400 rpm)
-        float maxPWM;       //!< maximum sensible speed setting (default: 100%)
-        float maxRPM;       //!< specified speed at `maxPWM` (default: 1900 rpm)
-        bool fanOff;        //!<
-        float refRPM[10];   //!< 
+        uint8_t minPWM;      // minimum specified speed setting (default: 20%)
+        uint16_t minRPM;     // specified speed at `minPWM` (default 400 rpm)
+        uint8_t maxPWM;      // maximum sensible speed setting (default: 100%)
+        uint16_t maxRPM;     // specified speed at `maxPWM` (default: 1900 rpm)
+        uint16_t spinup;     // minimum full speed duration during spin up (default: 0s)
+        uint16_t refRPM[10]; // speed reference values (default: none)
 
         /**
          * Constructs a new four wire fan settings instance.
          * 
-         * @param min       PWM The minimum specified speed setting (default: 20%)
-         * @param minRPM    The specified speed at `minPWM` (default 400 rpm)
-         * @param maxPWM    The maximum sensible speed setting (default: 100%)
-         * @param maxRPM    The specified speed at `maxPWM` (default: 1900 rpm)
+         * @param minPWM     The minimum specified speed setting (default: 20%)
+         * @param minRPM     The specified speed at `minPWM` (default 400 rpm)
+         * @param maxPWM     The maximum sensible speed setting (default: 100%)
+         * @param maxRPM     The specified speed at `maxPWM` (default: 1900 rpm)
+         * @param spinUp     The minimum full speed duration during spin up (default: 0s)
+         * @param refRPM     The fan speed reference values (default: none)
          */
-        FourWireFanModel(uint8_t minPWM = 20, uint16_t minRPM = 400, uint8_t maxPWM = 100, uint16_t maxRPM = 2000, bool fanOff = true, float refRPM[10] = nullptr):
+        FourWireFanModel(uint8_t minPWM = 20, uint16_t minRPM = 400, uint8_t maxPWM = 100, uint16_t maxRPM = 2000, uint16_t spinup = 0, uint16_t refRPM[10] = nullptr):
             minPWM(minPWM),
             minRPM(minRPM),
             maxPWM(maxPWM),
             maxRPM(maxRPM),
-            fanOff(fanOff)
-        { /* nop */ }
+            spinup(spinup)
+        { *this->refRPM = *refRPM; }
 
         FourWireFanModel* setCoefficient(uint8_t index, float rpm) { this->refRPM[index] = rpm; }
         FourWireFanModel* setCoefficients(float refRPM[10]) { *this->refRPM = *refRPM; }
@@ -134,6 +136,7 @@ class FourWireFan {
         unsigned long _rpm = 0;                         //!< the calculated RPM (i.e. fan speed)
         volatile unsigned long _blink = 0;              //!< the moment of the last interrupt 'wakeup'
         volatile unsigned long _pulses = 0;             //!< the pulses within the current sample period
+        int16_t _spinup = 0;                            // the spinup condition counter
 
         void setup();                                   //!< initial internal pin setup
 };

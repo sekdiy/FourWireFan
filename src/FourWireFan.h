@@ -127,6 +127,7 @@ class FourWireFan {
 
         float getPWM();                                 //!< Returns current PWM set point
         FourWireFan* setPWM(float pwm);                 //!< Updates PWM set point
+        bool isBlocked();                              // Shows indication of spindown condition
 
         FourWireFanModel* getModel();                   //!< Returns current four wire fan model
         FourWireFan* setModel(FourWireFanModel* model = &DefaultFanModel);  //!< Updates four wire fan model

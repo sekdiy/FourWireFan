@@ -256,6 +256,16 @@ FourWireFan* FourWireFan::setPWM(float pwm)
 }
 
 /**
+ * Shows indication of spindown condition.
+ * 
+ * @return bool
+ */
+bool FourWireFan::isBlocked()
+{
+    return (0 < this->_spinup);
+}
+
+/**
  * Returns current four wire fan model.
  * 
  * @since 2020-07-22

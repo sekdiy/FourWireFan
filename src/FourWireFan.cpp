@@ -1,16 +1,16 @@
 /**
  * Four Wire Fan
  *
- * An Arduino four-wire fan library that provides a PWM speed and tachometer interface.
+ * A four-wire fan driver that provides a PWM speed and tachometer interface.
  *
  * @author sekdiy (https://github.com/sekdiy/FourWireFan)
  * @date 22.07.2020 Initial release.
  * @version See git comments for changes.
  */
 
+#include <math.h>
 #include "Arduino.h"
 #include "FourWireFan.h"    // https://github.com/sekdiy/FourWireFan
-#include <math.h>
 
 /** 
  * Simple constructor for a four wire fan
@@ -284,12 +284,12 @@ FourWireFanModel* FourWireFan::getModel()
  * @since 2020-07-22
  * 
  * @param model The new model to set.
- * @return FourWireFan*
  * 
- * @todo sanity check best done in model class...
+ * @return FourWireFan*
  */
 FourWireFan* FourWireFan::setModel(FourWireFanModel* model) 
 {
+    // check for safety related out-of-bounds values
     if ((model->minPWM >= 0) && (model->maxPWM <= 100) && (model->maxPWM > model->minPWM)) {
         this->_model = model;
     }

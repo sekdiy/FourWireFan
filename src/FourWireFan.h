@@ -129,15 +129,15 @@ class FourWireFan {
 
         bool isBlocked();                              // Shows indication of spindown condition
 
-        FourWireFanModel* getModel();                   //!< Returns current four wire fan model
-        FourWireFan* setModel(FourWireFanModel* model = &DefaultFanModel);  //!< Updates four wire fan model
+        FourWireFanModel* getModel();                   // Returns current four wire fan model
+        FourWireFan* setModel(FourWireFanModel* model); // Updates four wire fan model
 
        /* deprecated: */
         void process(uint16_t duration = 1000) { update(duration); }
 
     protected:
-        FourWireFanSettings* _settings;                 //!< four wire fan settings
-        FourWireFanModel* _model;                       //!< four wire fan model
+        FourWireFanSettings* _settings;                 // four wire fan settings
+        FourWireFanModel* _model;                       // four wire fan model
 
         uint8_t _pwm = 255;                             // the set point for PWM output pin (default: 100%)
         uint32_t _rpm = 0;                              // the calculated RPM (i.e. fan speed)
@@ -145,7 +145,7 @@ class FourWireFan {
         volatile uint32_t _blink = 0;                   // the moment of the last interrupt 'wakeup'
         volatile uint32_t _pulses = 0;                  // the pulses within the current sample period
 
-        void setup();                                   //!< initial internal pin setup
+        void setup();                                   // initial internal pin setup
 };
 
 #endif   // __FOURWIREFAN_H__

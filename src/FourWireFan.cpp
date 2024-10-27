@@ -269,7 +269,7 @@ FourWireFan* FourWireFan::setModel(FourWireFanModel* model)
 /**
  * Pre-defined four wire fan settings instances.
  */
-FourWireFanSettings DefaultFanSettings = FourWireFanSettings(); //!< Default four wire fan settings instance.
+FourWireFanSettings const DefaultFanSettings = FourWireFanSettings(); // Default four wire fan settings instance.
 
 /**
  * Pre-defined four wire fan model instances.

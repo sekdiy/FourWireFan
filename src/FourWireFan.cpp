@@ -77,11 +77,13 @@ void FourWireFan::setup()
  */
 void FourWireFan::reset() 
 {
-    noInterrupts();                                 //!< going to change interrupt variable(s)
-    this->_pulses = 0;                              //!< reset pulse counter
-    interrupts();                                   //!< never forget!
-
-    this->_rpm = 0;                                 //!< explicitly reset speed value
+    noInterrupts();                                 // going to change interrupt variable(s)
+    this->_blink = 0;                               // reset last debouncing interval
+    this->_pulses = 0;                              // reset pulse counter
+    interrupts();                                   // never forget!
+    
+    this->_spinup = 0;                              // explicitly stop spinup…
+    this->_rpm = 0;                                 // …and reset speed value
 }
 
 /**

@@ -109,9 +109,9 @@ class FourWireFan {
          * Extended constructor for a four wire fan (requires prepared configuration)
          * 
          * @param settings The connection settings of a four wire fan. 
-         * @param model The properties of a four wire fan.
+         * @param model The properties of a four wire fan (optional).
          */
-        FourWireFan(FourWireFanSettings* settings = &DefaultFanSettings, FourWireFanModel* model = &DefaultFanModel);
+        FourWireFan(FourWireFanSettings* settings, FourWireFanModel* model = &DefaultFourWireFanModel);
 
 
         void process(unsigned long duration = 1000);    //!< Processes fan speed from tachometer pulse input

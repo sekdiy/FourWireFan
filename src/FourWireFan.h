@@ -11,87 +11,8 @@
 #ifndef __FOURWIREFAN_H__
 #define __FOURWIREFAN_H__
 
-/**
- * Connection settings of a four wire fan. 
- * These settings inform the driver about the electrical connection of a fan. 
- */
-class FourWireFanSettings {
-    public:
-        // public properties to avoid the getter/setter pattern
-        uint8_t pwmPin;        // The output pin where the fan's PWM signal input is connected
-        uint8_t tachPin;       // The input pin where the fan's tachometer signal output pin is connected
-        void (*tachISR)(void); // Tachometer interrupt service routine (handler function) callback reference
-        uint8_t tachMode;      // Tachometer interrupt mode
-        uint8_t tachPU;        // Pull up tach pin internally?
-        uint32_t tau;          // The debounce timeout
-
-        /**
-         * Constructs a new four wire fan settings instance.
-         * 
-         * @param pwmPin       The output pin where the fan's PWM signal input is connected (default: 3)
-         * @param tachPin      The input pin where the fan's tachometer signal output pin is connected (default: 2)
-         * @param tachISR      Tachometer interrupt service routine (handler function) callback reference (default: none)
-         * @param tachMode     Tachometer interrupt pin mode (default: rising)
-         * @param tachPU       Pull-up tach pin internally? (default: no)    
-         * @param tau          debounce timeout (default: 10000)
-         */
-        FourWireFanSettings(uint8_t pwmPin = 3, uint8_t tachPin = 2, void (*tachISR)(void) = nullptr, uint8_t tachMode = FALLING, uint8_t tachPU = INPUT_PULLUP, uint32_t tau = 10000L): 
-            pwmPin(pwmPin), 
-            tachPin(tachPin),
-            tachISR(tachISR),
-            tachMode(tachMode),
-            tachPU(tachPU),
-            tau(tau)
-        { /* nop */ }
-};
-
-/**
- * Pre-defined four wire fan settings instances.
- */
-extern FourWireFanSettings const DefaultFanSettings;  // Default four wire fan settings instance.
-
-/**
- * Specific properties of a four wire fan.
- * These properties form the 'model' of a fan, allowing better control and safer operation. 
- */
-class FourWireFanModel {
-    public:
-        // public properties to avoid the getter/setter pattern
-        uint8_t minPWM;      // minimum specified speed setting (default: 20%)
-        uint16_t minRPM;     // specified speed at `minPWM` (default 400 rpm)
-        uint8_t maxPWM;      // maximum sensible speed setting (default: 100%)
-        uint16_t maxRPM;     // specified speed at `maxPWM` (default: 1900 rpm)
-        uint16_t spinup;     // minimum full speed duration during spin up (default: 0s)
-        uint16_t refRPM[10]; // speed reference values (default: none)
-
-        /**
-         * Constructs a new four wire fan settings instance.
-         * 
-         * @param minPWM     The minimum specified speed setting (default: 20%)
-         * @param minRPM     The specified speed at `minPWM` (default 400 rpm)
-         * @param maxPWM     The maximum sensible speed setting (default: 100%)
-         * @param maxRPM     The specified speed at `maxPWM` (default: 1900 rpm)
-         * @param spinUp     The minimum full speed duration during spin up (default: 0s)
-         * @param refRPM     The fan speed reference values (default: none)
-         */
-        FourWireFanModel(uint8_t minPWM = 20, uint16_t minRPM = 400, uint8_t maxPWM = 100, uint16_t maxRPM = 2000, uint16_t spinup = 0, uint16_t refRPM[10] = nullptr):
-            minPWM(minPWM),
-            minRPM(minRPM),
-            maxPWM(maxPWM),
-            maxRPM(maxRPM),
-            spinup(spinup)
-        { *this->refRPM = *refRPM; }
-
-        FourWireFanModel* setCoefficient(uint8_t index, float rpm) { this->refRPM[index] = rpm; return this; }
-        FourWireFanModel* setCoefficients(uint16_t refRPM[10]) { *this->refRPM = *refRPM; return this; }
-};
-
-/**
- * Pre-defined fan model instances.
- */
-extern FourWireFanModel DefaultThreeWireFanModel;   // Default *three* wire fan model instance.
-extern FourWireFanModel DefaultFourWireFanModel;    // Default *four* wire fan model instance.
-extern FourWireFanModel NF_A12_25_FanModel;         // Noctua NF-A12x25 model instance.
+#include "FourWireFanSettings.h"
+#include "FourWireFanModel.h"
 
 /**
  * A four-wire fan driver that provides a PWM speed and tachometer interface.
@@ -129,7 +50,7 @@ class FourWireFan {
         uint8_t getPWM();                               // Returns current PWM set point
         FourWireFan* setPWM(uint8_t pwm);               // Updates PWM set point
 
-        bool isBlocked();                              // Shows indication of spindown condition
+        bool isBlocked();                               // Shows indication of spindown condition
 
         FourWireFanModel* getModel();                   // Returns current four wire fan model
         FourWireFan* setModel(FourWireFanModel* model); // Updates four wire fan model

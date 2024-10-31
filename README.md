@@ -34,9 +34,9 @@ See the following wiring diagrams for low power fans (max. current: 500mA):
 
 Using the Arduino pin naming scheme, connect fan pin 1 to `GND`, fan pin 2 to `VCC`, fan pin 3 to Arduino pin `2` and (optionally) fan pin 4 to Arduino pin `3`:
 
-![Arduino UNO: fan pin 1 to GND, fan pin 2 to VCC or RAW, fan pin 3 to Arduino pin 2 and (optionally) fan pin 4 to Arduino pin 3.](doc/simple.svg "Figure 1: Simple wiring diagram with Ardunio Uno")
+![Arduino UNO: fan pin 1 to GND, fan pin 2 to VCC or RAW, fan pin 3 to Arduino pin 2 and (optionally) fan pin 4 to Arduino pin 3.](https://raw.githubusercontent.com/sekdiy/FourWireFan/master/doc/simple.svg "Figure 1: Simple wiring diagram with Ardunio Uno")
 
-![Arduino Mini, Nano or Micro: fan pin 1 to GND, fan pin 2 to 5V, fan pin 3 to Arduino pin D2 and (optionally) fan pin 4 to Arduino pin D3.](doc/mini.svg "Figure 2: Simple wiring diagram with Arduino Mini, Nano or Micro")
+![Arduino Mini, Nano or Micro: fan pin 1 to GND, fan pin 2 to 5V, fan pin 3 to Arduino pin D2 and (optionally) fan pin 4 to Arduino pin D3.](https://raw.githubusercontent.com/sekdiy/FourWireFan/master/doc/mini.svg "Figure 2: Simple wiring diagram with Arduino Mini, Nano or Micro")
 
 ## Fan speed, noise and reliability
 

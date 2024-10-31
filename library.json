@@ -12,7 +12,8 @@
     [
       {
         "name": "sekdiy",
-        "email": "sek@sekdiy.de"
+        "email": "sek@sekdiy.de",
+        "maintainer": true
       }
     ],
     "examples": 
@@ -20,12 +21,12 @@
         {
             "name": "Simple",
             "base": "examples/Simple",
-            "files": "Simple.cpp"
+            "files": ["Simple.cpp"]
         },
         {
             "name": "Blink",
             "base": "examples/Advanced",
-            "files": "Advanced.cpp"
+            "files": ["Advanced.cpp"]
         }
     ],
     "license": "MIT",
